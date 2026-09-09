@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLEETGRID · Edge-AI AMR Coordination</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amr.css">
+</head>
+<body>
+
+<div id="intro"><h1>FLEET<span>GRID</span></h1><p>ESTABLISHING EDGE MESH · SYNCING DIGITAL TWIN</p><div class="bar"><i></i></div></div>
+
+<header>
+  <div class="brand">
+    <svg width="30" height="30" viewBox="0 0 30 30"><path d="M15 2 26 8v14L15 28 4 22V8z" fill="none" stroke="#ffb454" stroke-width="1.4"/><circle cx="15" cy="15" r="3.4" fill="#4fd8eb"/><path d="M15 6v5M15 19v5M7 10.5l4.5 2.6M18.5 16.9 23 19.5M23 10.5l-4.5 2.6M11.5 16.9 7 19.5" stroke="#4fd8eb" stroke-width="1"/></svg>
+    <div><h1>FLEET<span>GRID</span></h1><small>EDGE-AI DISTRIBUTED COORDINATION · AMR OPS · SIH</small></div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><label>UNITS ACTIVE</label><b id="kFleet">—</b></div>
+    <div class="kpi"><label>ORDERS DONE</label><b id="kOrders">0</b></div>
+    <div class="kpi" id="kConfBox"><label>OPEN CONFLICTS</label><b id="kConf">0</b></div>
+    <div class="kpi"><label>AVG BATTERY</label><b id="kBatt">—</b></div>
+    <div class="kpi"><label>MESH HEALTH</label><b id="kMesh">—</b></div>
+    <div class="kpi"><label>THROUGHPUT</label><b id="kThr">—<span class="sub"> /hr</span></b></div>
+  </div>
+  <div class="hdrr">
+    <div class="shift">SHIFT A · LIVE</div>
+    <div id="hdrClock">09:41:00</div>
+    <button class="hbtn" id="pauseBtn" title="Pause (Space)">❚❚</button>
+    <button class="hbtn" id="spdBtn" title="Sim speed">1×</button>
+  </div>
+</header>
+
+<main>
+  <aside id="left">
+    <section><h3>Fleet Roster <em id="unitCount"></em></h3><div id="roster"></div></section>
+    <section><h3>Overlays</h3>
+      <label class="ov"><span>NAVIGATION PATHS</span><input type="checkbox" checked data-ov="paths"><span class="sw"></span></label>
+      <label class="ov"><span>UNIT LABELS</span><input type="checkbox" checked data-ov="labels"><span class="sw"></span></label>
+      <label class="ov"><span>COMM MESH</span><input type="checkbox" checked data-ov="mesh"><span class="sw"></span></label>
+      <label class="ov"><span>CONFLICT ZONES</span><input type="checkbox" checked data-ov="zones"><span class="sw"></span></label>
+    </section>
+    <section><h3>Command Uplink</h3>
+      <div class="cmds">
+        <button class="btn ok" id="btnDispatch">Dispatch Idle</button>
+        <button class="btn" id="btnObs">Spawn Obstacle</button>
+        <button class="btn warn" id="btnDead">Inject Deadlock</button>
+        <button class="btn" id="btnRecall">Recall &amp; Charge</button>
+        <button class="btn ok" id="btnResume" style="grid-column:1/-1">Clear All E-Stops</button>
+      </div>
+      <div class="camrow">
+        <button class="btn on" data-cam="ORBIT">Orbit</button>
+        <button class="btn" data-cam="TOP">Top-Down</button>
+        <button class="btn" data-cam="FOLLOW">Follow</button>
+      </div>
+    </section>
+  </aside>
+
+  <div id="vp">
+    <div class="corner c-tl"></div><div class="corner c-tr"></div><div class="corner c-bl"></div><div class="corner c-br"></div>
+    <div class="hud hud-tl"><span class="lv">●</span>&nbsp;LIVE TELEMETRY · SECTOR W-07 · DIGITAL TWIN</div>
+    <div class="hud hud-tr">CAM <b id="hudCam">ORBIT</b> &nbsp;·&nbsp; <b id="fps">60</b> FPS &nbsp;·&nbsp; EDGE-GW <b id="gwStat">ONLINE</b></div>
+    <div class="hud hud-br"><b>DRAG</b> orbit &nbsp;·&nbsp; <b>WHEEL</b> zoom &nbsp;·&nbsp; <b>R-DRAG</b> pan<br><b>CLICK</b> select unit &nbsp;·&nbsp; <b>DBL-CLICK</b> follow &nbsp;·&nbsp; <b>SPACE</b> pause</div>
+    <div id="legend">
+      <i class="lg-m">MOVING</i><i class="lg-p">PATH / DEST</i>
+      <i class="lg-i">IDLE</i><i class="lg-x">POTENTIAL CONFLICT</i>
+      <i class="lg-c">CHARGING</i><i class="lg-b">BLOCKED / DEADLOCK</i>
+    </div>
+    <div id="banner"><b id="bnTitle">DEADLOCK DETECTED</b><small id="bnSub"></small><div class="prog"><i id="bnProg"></i></div></div>
+  </div>
+
+  <aside id="right">
+    <div id="inspEmpty"><span class="cross">⊹</span>NO UNIT SELECTED<br>CLICK A ROBOT IN THE MAP<br>OR IN THE FLEET ROSTER</div>
+    <div id="inspBody" style="display:none">
+      <div class="insp-head"><h2 id="iId">—</h2><span class="badge" id="iStat">—</span><span class="pri" id="iPri">P3</span></div>
+      <div class="tgrid">
+        <div class="intent" id="iIntent">—</div>
+        <label>PRIORITY</label><div class="prictrl"><button id="priDn">−</button><span class="v" id="iPriV">P3 · NORMAL</span><button id="priUp">＋</button></div>
+        <label>BATTERY</label><div class="ibatt"><div class="bar"><i id="iBattBar"></i></div><em id="iBatt">—</em></div>
+        <label>VELOCITY</label><div class="v" id="iVel">—</div>
+        <label>POSITION</label><div class="v" id="iPos">—</div>
+        <label>DESTINATION</label><div class="v" id="iDest">—</div>
+        <label>CURRENT TASK</label><div class="v" id="iTask">—</div>
+        <label>ETA</label><div class="v" id="iEta">—</div>
+        <label>COMMS</label><div class="v" style="display:flex;align-items:center;gap:9px"><div class="rssi" id="iRssi"><i></i><i></i><i></i><i></i></div><span id="iDbm">—</span></div>
+        <label>CONFLICT</label><div class="v" id="iConf">—</div>
+      </div>
+      <div class="insp-act">
+        <button class="btn warn" id="btnHalt">E-Stop</button>
+        <button class="btn" id="btnCharge">Send to Charge</button>
+      </div>
+    </div>
+    <div class="arb"><h4>LAST EDGE ARBITRATION</h4><p id="arbTxt">— no arbitration events yet —</p></div>
+  </aside>
+</main>
+
+<footer>
+  <div id="logPane"><h3>Event Stream <em>FLEET BUS · MQTT/DDS</em></h3><div id="log"></div></div>
+  <div id="cmPane"><h3>Conflict Monitor <em id="cmCount">0 ACTIVE</em></h3><div id="cmList"><div class="cfEmpty">NO ACTIVE CONFLICTS<br>FLEET NOMINAL</div></div></div>
+</footer>
+
+<div id="tip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="amr.js"></script>
+</body>
+</html>
