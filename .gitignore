@@ -1,0 +1,29 @@
+# Secrets / credentials — never commit these
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+creds.json
+secrets.yaml
+*.crdownload
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# ROS / colcon build artifacts
+build/
+install/
+log/
+*.log
+
+# OS / editor
+.DS_Store
+*.swp
+*~

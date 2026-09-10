@@ -1,0 +1,107 @@
+services:
+  robot1:
+    container_name: amr_robot1
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: amr_fleet:ros2-humble
+    network_mode: host
+    environment:
+      - ROS_DOMAIN_ID=42
+      - ROBOT_ID=robot1
+      - ROS_NAMESPACE=/robot1
+      - ROBOT_ROLE=jetson_nano
+    devices:
+      - /dev/fb0
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - .:/repo:rw,z
+    command: >
+      /bin/bash -c "
+      source /opt/ros/humble/setup.bash &&
+      source /amr_fleet_ws/install/setup.bash &&
+      python3 /repo/src/amr_fleet/scripts/robot_node.py --namespace robot1
+      "
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+  robot2:
+    container_name: amr_robot2
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: amr_fleet:ros2-humble
+    network_mode: host
+    environment:
+      - ROS_DOMAIN_ID=42
+      - ROBOT_ID=robot2
+      - ROS_NAMESPACE=/robot2
+      - ROBOT_ROLE=raspberry_pi4
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - .:/repo:rw,z
+    command: >
+      /bin/bash -c "
+      source /opt/ros/humble/setup.bash &&
+      source /amr_fleet_ws/install/setup.bash &&
+      python3 /repo/src/amr_fleet/scripts/robot_node.py --namespace robot2
+      "
+    depends_on:
+      - robot1
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+  robot3:
+    container_name: amr_robot3
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: amr_fleet:ros2-humble
+    network_mode: host
+    environment:
+      - ROS_DOMAIN_ID=42
+      - ROBOT_ID=robot3
+      - ROS_NAMESPACE=/robot3
+      - ROBOT_ROLE=raspberry_pi4
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - .:/repo:rw,z
+    command: >
+      /bin/bash -c "
+      source /opt/ros/humble/setup.bash &&
+      source /amr_fleet_ws/install/setup.bash &&
+      python3 /repo/src/amr_fleet/scripts/robot_node.py --namespace robot3
+      "
+    depends_on:
+      - robot1
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+  warehouse_sim:
+    container_name: amr_warehouse_sim
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: amr_fleet:ros2-humble
+    network_mode: host
+    environment:
+      - ROS_DOMAIN_ID=42
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - .:/repo:rw,z
+    command: >
+      /bin/bash -c "
+      source /opt/ros/humble/setup.bash &&
+      source /amr_fleet_ws/install/setup.bash &&
+      python3 /repo/src/amr_fleet/scripts/warehouse_sim.py
+      "
+    depends_on:
+      - robot1
+      - robot2
+      - robot3
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
